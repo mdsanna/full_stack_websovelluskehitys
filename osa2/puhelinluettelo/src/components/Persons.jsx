@@ -1,10 +1,11 @@
-const Persons = ({persons, filter}) => {
+const Persons = ({persons, filter, remove}) => {
 
-    const Person = ({person}) => {
+    const Person = ({person, remove}) => {
 
         return (
             <li>
-            {person.name} {person.number}
+            {person.name} {person.number} 
+            <button onClick={remove}>delete</button>
             </li>
         )
     }
@@ -17,6 +18,7 @@ const Persons = ({persons, filter}) => {
             <Person 
                 key={person.name}
                 person={person}
+                remove={() => remove(person)}
             /> )}
         </>
     )

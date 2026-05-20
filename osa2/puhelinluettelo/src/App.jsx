@@ -45,6 +45,19 @@ const App = () => {
     setNewNumber('')
   }
 
+  const removePerson = (person) => {
+    console.log('removing person: ', person.name)
+    const confirmation=window.confirm(`Delete ${person.name}?`)
+    if (confirmation) {
+      personsService.remove(person.id)
+        .then(response => {
+          setPersons(persons.filter(p => p.id !== person.id))
+        })
+
+    }
+
+  }
+
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -78,6 +91,7 @@ const App = () => {
       <Persons 
         persons={persons}
         filter={newFilter}
+        remove={removePerson}
         />
 
     </div>
