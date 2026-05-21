@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import personsService from './services/persons'
+import Notification from './components/Notification'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
@@ -10,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [notification, setNotification] = useState({ message: null, type: null })
 
   
   useEffect(() => {
@@ -34,7 +36,17 @@ const App = () => {
           personsService.update(updatedObject)
             .then(response => {
               setPersons(persons.map(person => person.id !== updatedObject.id ? person : response))
+              setNotification({
+                message:`${newName} updated.`,
+                type: 'notification'
               })
+            })
+            .catch(error => {
+                setNotification({
+                  message:`Information of ${newName} has already been removed from server.`,
+                  type: 'error'
+              })
+            })
         }
     }
     else {
@@ -46,6 +58,10 @@ const App = () => {
       personsService.create(personObject)
        .then(response => {
         setPersons(persons.concat(response))
+        setNotification({
+          message:`${newName} added`,
+          type: 'notification'
+        })
        })
 
       
@@ -61,6 +77,10 @@ const App = () => {
       personsService.remove(person.id)
         .then(response => {
           setPersons(persons.filter(p => p.id !== person.id))
+          setNotification({
+            message:`${person.name} removed`,
+            type: 'notification'
+          })
         })
 
     }
@@ -81,6 +101,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={notification.message} type={notification.type}/>
       <h2>Phonebook</h2>
       <div>
         <Filter 
