@@ -1,6 +1,29 @@
 
-const Country = ({country}) => {
+const Country = ({country, weather}) => {
+  
+    const WeatherInformation = ({city, weather}) => {
 
+        if (weather) {
+                const current = weather.current
+                return (
+                <>
+                <h2>Weather in {city}</h2>
+                <p>Temperature: {current.temp_c}</p>
+                <img src={current.condition.icon} alt={`Current condition: ${current.condition.text}`} />
+                <p>Wind: {current.wind_dir} {current.wind_mph} </p>
+                </>
+                )
+            }
+
+        return (
+            <>
+            <h2>Weather in {city}</h2>
+            <p>No weather information</p>
+            </>
+        )
+    }
+    
+        
     if (country) {
 
     return (
@@ -17,6 +40,13 @@ const Country = ({country}) => {
             </ul>
   
             <img src={country.flags.png} alt={`Flag of ${country.name.common}`} />
+        
+            <WeatherInformation 
+                city={country.capital}
+                weather={weather}
+                />
+
+
         </div>
         )
     }

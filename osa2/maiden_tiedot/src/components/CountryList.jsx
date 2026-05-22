@@ -1,6 +1,6 @@
 import Country from './Country'
 
-const CountryList = ({countries, onClick}) => {
+const CountryList = ({countries, onClick, weather}) => {
 
     //Too many matches
     if (countries.length>10) {
@@ -29,7 +29,9 @@ const CountryList = ({countries, onClick}) => {
     if (countries.length===1){
         return (
             <>
-                <Country country={countries[0]}/>
+                <Country 
+                    country={countries[0]}
+                    weather={weather}/>
             </>
         )
 
