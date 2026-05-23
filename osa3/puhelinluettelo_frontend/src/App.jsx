@@ -55,9 +55,11 @@ const App = () => {
         number: newNumber
        }
 
+
       personsService.create(personObject)
        .then(response => {
-        setPersons(response)
+        setPersons(persons.concat(response))
+        console.log(`${newName} added`)
         setNotification({
           message:`${newName} added`,
           type: 'notification'

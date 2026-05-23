@@ -1,3 +1,5 @@
+require('dotenv').config()
+const Person = require('./models/person')
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
@@ -14,7 +16,6 @@ morgan.token('req-content', function (req, res) {
   })  
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-content'))
-
 
 let persons =
 [
@@ -41,7 +42,10 @@ let persons =
   ]
   //getting all persons
   app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({})
+    .then(persons => {
+      response.json(persons)
+    })
   })
 
   //getting information
@@ -56,14 +60,11 @@ let persons =
 
   //getting specific person
   app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id 
-    const person = persons.find(person => person.id === id)
-
-    if (person) {
+    Person.findById(request.params.id)
+    .then(person => {
       response.json(person)
-    } else {
-      response.status(404).end()
-    }
+    })
+
   })
 
   //adding a new person
@@ -82,26 +83,19 @@ let persons =
       })
     }
 
-    const exists = persons.some(person => person.name === body.name)
-
-    if (exists){
-      return response.status(400).json({ 
-        error: 'name must be unique' 
-      })
-    }
-
-    const id = Math.floor(Math.random()*100)
-
-    const person = {
+    const person = new Person ({
       name: body.name,
       number: body.number,
-      id: id
-    }
+    })
 
-    persons = persons.concat(person)
-    response.json(persons)
+    person.save()
+    .then(savedPerson => {
+        response.json(savedPerson)
+    })
+
   })
 
+  /**
     //deleting a specific person
     app.delete('/api/persons/:id', (request, response) => {
       const id = request.params.id 
@@ -109,9 +103,10 @@ let persons =
      
       response.status(204).end()
     })
+*/ 
 
     //listening requests
-    const PORT = process.env.port || 3001
+    const PORT = process.env.PORT
       app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`)
     })
