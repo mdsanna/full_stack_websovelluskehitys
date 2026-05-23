@@ -1,5 +1,7 @@
 const express = require('express')
 const app = express()
+app.use(express.json())
+
 
 let persons =
 [
@@ -24,11 +26,12 @@ let persons =
       "id": "4"
     }
   ]
-
+  //getting all persons
   app.get('/api/persons', (request, response) => {
   response.json(persons)
   })
 
+  //getting information
   app.get('/info', (request, response) => {
      const time = new Date()
      
@@ -38,17 +41,55 @@ let persons =
     `)
   })
 
-    app.get('/api/persons/:id', (request, response) => {
-      const id = request.params.id 
-      const person = persons.find(person => person.id === id)
+  //getting specific person
+  app.get('/api/persons/:id', (request, response) => {
+    const id = request.params.id 
+    const person = persons.find(person => person.id === id)
 
-      if (person) {
-        response.json(person)
-      } else {
-        response.status(404).end()
-      }
-    })
+    if (person) {
+      response.json(person)
+    } else {
+      response.status(404).end()
+    }
+  })
 
+  //adding a new person
+  app.post('/api/persons/', (request, response) => {
+    const body = request.body
+
+    if (!body.name) {
+      return response.status(400).json({ 
+        error: 'name missing' 
+      })
+    }
+
+    if (!body.number) {
+      return response.status(400).json({ 
+        error: 'number missing' 
+      })
+    }
+
+    const exists = persons.some(person => person.name === body.name)
+
+    if (exists){
+      return response.status(400).json({ 
+        error: 'name must be unique' 
+      })
+    }
+
+    const id = Math.floor(Math.random()*100)
+
+    const person = {
+      name: body.name,
+      number: body.number,
+      id: id
+    }
+
+    persons = persons.concat(person)
+    response.json(persons)
+  })
+
+    //deleting a specific person
     app.delete('/api/persons/:id', (request, response) => {
       const id = request.params.id 
       persons = persons.filter(person => person.id != id)
@@ -56,6 +97,7 @@ let persons =
       response.status(204).end()
     })
 
+    //listening requests
     const PORT = 3001
       app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`)
