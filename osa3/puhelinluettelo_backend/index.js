@@ -28,11 +28,16 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :r
   //getting information
   app.get('/info', (request, response) => {
      const time = new Date()
+
+    Person.find({})
+      .then(persons => {
+        response.send(`
+        <p>Phonebook has info for ${persons.length} people</p>
+        <p>${time}</p>
+      `)
+    })
      
-     response.send(`
-      <p>Phonebook has info for ${persons.length} people</p>
-      <p>${time}</p>
-    `)
+
   })
 
   //getting specific person
