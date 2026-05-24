@@ -36,7 +36,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :r
   })
 
   //getting specific person
-  app.get('/api/persons/:id', (request, response) => {
+  app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id)
     .then(person => {
       if (person) {
@@ -45,10 +45,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :r
           response.status(404).end()
       }
     })
-    .catch(error => {
-      console.log(error)
-      response.status(400).send({ error: 'malformatted id' })
-    })
+    .catch(error => next(error))
 
   })
 
@@ -80,17 +77,49 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :r
 
   })
 
+  //updating person
+  app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
 
-    //deleting a specific person
-    app.delete('/api/persons/:id', (request, response) => {
+    Person.findById(request.params.id)
+    .then(person => {
+      if (!person) {
+        return response.status(404).end()
+      } 
+    
+      person.name = body.name
+      person.number = body.number
+
+      person.save()
+      .then(updatedPerson => {
+        response.json(updatedPerson)
+      })
+    })
+    .catch(error =>next(error))
+  })
+
+
+  //deleting a specific person
+  app.delete('/api/persons/:id', (request, response, next) => {
       Person.findByIdAndDelete(request.params.id)
       .then(result => {
         response.status(204).end()
       })
-      .catch(error => {
-        console.log(error)
-      })
-    })
+      .catch(error => next(error))
+  })
+
+
+  const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+  }
+
+    app.use(errorHandler)
 
     //listening requests
     const PORT = process.env.PORT
