@@ -28,6 +28,7 @@ const App = () => {
     const exists = persons.some(person => person.name === newName)
     
     if (exists) {
+        console.log(`${newName} is already added to phonebook`)
         const confirmation=window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
         if (confirmation) {
           const personObject = persons.find((person) => person.name === newName)
@@ -64,6 +65,13 @@ const App = () => {
           message:`${newName} added`,
           type: 'notification'
         })
+       })
+       .catch(error => {
+        console.log(error.response.data.error)
+        setNotification({
+          message:`${error.response.data.error}`,
+          type: 'error'
+          })
        })
 
       
