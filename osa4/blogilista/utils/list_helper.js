@@ -40,6 +40,29 @@ const mostBlogs = (blogs) => {
 
 }
 
+const mostLikes = (blogs) => {
+
+  if (blogs.length === 0) {
+    return ''
+  } 
+
+  const authors = blogs.reduce((sum, blog) => {
+    if (sum[blog.author]) {
+      sum[blog.author] += blog.likes
+    }
+    else
+      sum[blog.author] = blog.likes
+      return sum
+  }, {})
+
+  const sorted = Object.entries(authors)
+    .map(([author, likes]) => ({ author, likes: likes }))
+    .sort((a, b) => b.likes - a.likes)
+
+    return sorted[0]
+
+}
+
 module.exports = {
-  dummy, totalLikes, favoriteBlog, mostBlogs
+  dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes
 }
