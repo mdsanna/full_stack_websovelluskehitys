@@ -13,9 +13,17 @@ blogsRouter.post('/', async (request, response) => {
 
   if(!blog.likes) blog.likes=0
 
-  const savedBlog = await blog.save()
-  logger.info('blog saved!')
-  response.status(201).json(savedBlog)
+  if(!blog.title | !blog.url) {
+      response.status(400).json({
+      error: 'name missing'
+    })
+  }
+
+  else {
+    const savedBlog = await blog.save()
+    logger.info('blog saved!')
+    response.status(201).json(savedBlog)
+  }
 })
 
 module.exports = blogsRouter

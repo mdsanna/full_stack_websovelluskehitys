@@ -59,6 +59,18 @@ const initialBlogs = [
     url: "http://happyblog.com",
   }  
 
+  const blogWithoutTitle = {
+    author: "Hannah Happy",
+    url: "http://happyblog.com",
+    likes: 4
+  }  
+
+  const blogWithoutUrl = {
+    title: "TestBlog",
+    author: "Teppo Tester",
+    likes: 6
+  }  
+
 beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(initialBlogs)
@@ -101,6 +113,22 @@ test.only('if amount of likes is not set, 0 is used', async () => {
  
   //checking that value for likes is set to 0
   assert.strictEqual(response.body.likes, 0)
+})
+
+
+test.only('blog without title can not be added', async () => {
+  const response = await api
+  .post('/api/blogs')
+  .send(blogWithoutTitle)
+  .expect(400)
+})
+
+
+test.only('blog without url can not be added', async () => {
+  const response = await api
+  .post('/api/blogs')
+  .send(blogWithoutUrl)
+  .expect(400)
 })
 
 after(async () => {
