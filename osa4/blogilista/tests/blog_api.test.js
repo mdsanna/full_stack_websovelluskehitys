@@ -46,6 +46,19 @@ const initialBlogs = [
   }  
 ]
 
+  const newBlog = {
+    title: "TestBlog",
+    author: "Teppo Tester",
+    url: "http://testblog.com",
+    likes: 3
+  }  
+
+  const blogWithoutLikes = {
+    title: "BlogWithoutLikes",
+    author: "Hannah Happy",
+    url: "http://happyblog.com",
+  }  
+
 beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(initialBlogs)
@@ -62,6 +75,32 @@ test.only('correct id field is used', async () => {
   // Check first blog object
   assert.ok(response.body[0].id)
   assert.ok(!response.body[0]._id)
+})
+
+test.only('a valid blog can be added', async () => {
+  await api
+  .post('/api/blogs')
+  .send(newBlog)
+  .expect(201)
+ 
+  const response = await api.get('/api/blogs')
+  const titles = response.body.map(blog => blog.title)
+  
+  //checking that amount of blogs is one more than before
+  assert.strictEqual(response.body.length, initialBlogs.length + 1)
+
+  assert(titles.includes(newBlog.title))
+
+})
+
+test.only('if amount of likes is not set, 0 is used', async () => {
+  const response = await api
+  .post('/api/blogs')
+  .send(blogWithoutLikes)
+  .expect(201)
+ 
+  //checking that value for likes is set to 0
+  assert.strictEqual(response.body.likes, 0)
 })
 
 after(async () => {
