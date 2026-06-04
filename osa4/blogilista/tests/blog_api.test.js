@@ -4,6 +4,7 @@ const { test, after, beforeEach, describe } = require('node:test')
 const mongoose = require('mongoose')
 const app = require('../app')
 const Blog = require('../models/blog')
+const blog = require('../models/blog')
 
 const api = supertest(app)
 
@@ -71,6 +72,13 @@ const initialBlogs = [
     likes: 6
   }  
 
+  const updatedBlog = {
+    title: "First class tests",
+    author: "Robert C. Martin",
+    url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
+    likes: 12
+  }
+
 beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(initialBlogs)
@@ -89,6 +97,7 @@ test.only('correct id field is used', async () => {
   assert.ok(!response.body[0]._id)
 })
 
+describe('adding new blog', () => { 
 test.only('a valid blog can be added', async () => {
   await api
   .post('/api/blogs')
@@ -129,6 +138,65 @@ test.only('blog without url can not be added', async () => {
   .post('/api/blogs')
   .send(blogWithoutUrl)
   .expect(400)
+})
+
+})
+
+
+describe('updating the blog', () => { 
+
+test.only('trying to update blog, which not exist', async () => {
+  const nonExistingId = new mongoose.Types.ObjectId()
+  const response = await api
+  .put(`/api/blogs/${nonExistingId}`)
+  .send(updatedBlog)
+  .expect(404)
+})
+
+test.only('updating the last existing blog with different likes', async () => {
+  
+  const response = await api.get('/api/blogs')
+  const blog = response.body[response.body.length-1]
+  const blogUpdated = {...blog, likes: 12}
+
+  await api
+  .put(`/api/blogs/${response.body[response.body.length-1].id}`)
+  .send(blogUpdated)
+  .expect(200)
+
+  const response2 = await api
+  .get(`/api/blogs/${response.body[response.body.length-1].id}`)
+  .expect(200)
+
+  assert.strictEqual(response2.body.likes, 12)
+
+})
+
+})
+
+describe('removing the blog', () => { 
+
+test.only('trying to remove blog, which not exist', async () => {
+  const nonExistingId = new mongoose.Types.ObjectId()
+  const response = await api
+  .delete(`/api/blogs/${nonExistingId}`)
+  .expect(404)
+})
+
+test.only('removing the last existing blog', async () => {
+  const response = await api.get('/api/blogs')
+  
+  await api
+  .delete(`/api/blogs/${response.body[response.body.length-1].id}`)
+  .expect(204)
+
+  const response2 = await api.get('/api/blogs')
+  
+  //checking that amount of blogs is one less than before
+  assert.strictEqual(response2.body.length, initialBlogs.length-1)
+
+})
+
 })
 
 after(async () => {
