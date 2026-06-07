@@ -3,7 +3,9 @@ const mongoose = require('mongoose')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
 const blogsRouter = require('./controllers/blogs')
+const usersRouter = require('./controllers/users')
 const Blog = require('./models/blog')
+const User = require('./models/user')
 
 const app = express()
 
@@ -15,5 +17,6 @@ mongoose.connect(mongoUrl, { family: 4 })
 
 app.use(express.json())
 app.use('/api/blogs', blogsRouter)
+app.use('/api/users', usersRouter)
 
 module.exports = app
