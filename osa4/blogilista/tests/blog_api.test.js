@@ -4,7 +4,6 @@ const { test, after, beforeEach, describe } = require('node:test')
 const mongoose = require('mongoose')
 const app = require('../app')
 const Blog = require('../models/blog')
-const blog = require('../models/blog')
 
 const api = supertest(app)
 
