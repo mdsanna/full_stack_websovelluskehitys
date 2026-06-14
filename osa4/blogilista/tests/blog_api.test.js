@@ -78,6 +78,20 @@ const initialBlogs = [
     likes: 12
   }
 
+
+const getToken = async () => {
+  const loginResponse = await api
+  .post('/api/login')
+  .send({
+    username:'Bob',
+    password: 'salasana'
+  })
+  .expect(200)
+ 
+  return loginResponse.body.token
+}
+
+
 beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(initialBlogs)
@@ -88,7 +102,7 @@ test.only('correct amount of blogs is returned', async () => {
   assert.strictEqual(response.body.length, 6)
 })
 
-test.only('correct id field is used', async () => {
+test('correct id field is used', async () => {
   const response = await api.get('/api/blogs')
 
   // Check first blog object
@@ -98,8 +112,10 @@ test.only('correct id field is used', async () => {
 
 describe('adding new blog', () => { 
 test.only('a valid blog can be added', async () => {
+  const token = await getToken()
   await api
   .post('/api/blogs')
+  .set('Authorization', `Bearer ${token}`)
   .send(newBlog)
   .expect(201)
  
@@ -114,8 +130,10 @@ test.only('a valid blog can be added', async () => {
 })
 
 test.only('if amount of likes is not set, 0 is used', async () => {
+  const token = await getToken()
   const response = await api
   .post('/api/blogs')
+  .set('Authorization', `Bearer ${token}`)
   .send(blogWithoutLikes)
   .expect(201)
  
@@ -125,18 +143,31 @@ test.only('if amount of likes is not set, 0 is used', async () => {
 
 
 test.only('blog without title can not be added', async () => {
+  const token = await getToken()
+
   const response = await api
   .post('/api/blogs')
+  .set('Authorization', `Bearer ${token}`)
   .send(blogWithoutTitle)
   .expect(400)
 })
 
 
 test.only('blog without url can not be added', async () => {
+  const token = await getToken()
+
   const response = await api
   .post('/api/blogs')
+  .set('Authorization', `Bearer ${token}`)
   .send(blogWithoutUrl)
   .expect(400)
+})
+
+test.only('blog can not be added without token', async () => {
+  const response = await api
+  .post('/api/blogs')
+  .send(newBlog)
+  .expect(401)
 })
 
 })

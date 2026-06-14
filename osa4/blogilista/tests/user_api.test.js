@@ -41,7 +41,7 @@ beforeEach(async () => {
 })
 
 describe('adding new user', () => { 
-test.only('a valid user can be added', async () => {
+test('a valid user can be added', async () => {
   
 console.log("a valid user can be added")
   
@@ -63,7 +63,7 @@ console.log("a valid user can be added")
 
 })
 
-test.only('user without username can not be added', async () => {
+test('user without username can not be added', async () => {
   
   const newUser = {
     "name": "Teppo Testi",
@@ -81,7 +81,7 @@ test.only('user without username can not be added', async () => {
 
 })
 
-test.only('user without password can not be added', async () => {
+test('user without password can not be added', async () => {
   
   const newUser = {
     "username": "ttesti",
@@ -99,7 +99,7 @@ test.only('user without password can not be added', async () => {
 
 })
 
-test.only('user with too short username can not be added', async () => {
+test('user with too short username can not be added', async () => {
   
   const newUser = {
     "username": "tt",
@@ -118,7 +118,7 @@ test.only('user with too short username can not be added', async () => {
 
 })
 
-test.only('user with too short password can not be added', async () => {
+test('user with too short password can not be added', async () => {
   
   const newUser = {
     "username": "ttesti",
@@ -137,7 +137,7 @@ test.only('user with too short password can not be added', async () => {
 
 })
 
-test.only('users without unique usernames can not be added', async () => {
+test('users without unique usernames can not be added', async () => {
   
   console.log("users without unique usernames can not be added")
 
